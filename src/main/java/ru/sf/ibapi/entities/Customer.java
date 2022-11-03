@@ -21,4 +21,8 @@ public class Customer {
 
     @Column(name = "first_name", nullable = false)
     private String firstName;
+
+    @Column(name = "balance", nullable = false)
+    private Long balanceInRoubles;
+
 }
