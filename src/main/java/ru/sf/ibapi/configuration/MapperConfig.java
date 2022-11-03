@@ -1,4 +1,4 @@
-package ru.sf.ibapi.configuration.modelmapper;
+package ru.sf.ibapi.configuration;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
