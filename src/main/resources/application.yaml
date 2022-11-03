@@ -1,0 +1,9 @@
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.datasource.url=see_develop_profile
+spring.datasource.username=see_develop_profile
+spring.datasource.password=see_develop_profile
+
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQL10Dialect
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.open-in-view=false
+
