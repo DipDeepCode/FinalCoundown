@@ -24,5 +24,4 @@ public class Customer {
 
     @Column(name = "balance", nullable = false)
     private Long balanceInRoubles;
-
 }

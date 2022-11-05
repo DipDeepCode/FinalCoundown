@@ -1,12 +1,14 @@
-package ru.sf.ibapi.services;
+package ru.sf.ibapi.services.customer;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.sf.ibapi.dto.CustomerDto;
 import ru.sf.ibapi.entities.Customer;
-import ru.sf.ibapi.exceptions.BalanceException;
+import ru.sf.ibapi.exceptions.ChangeBalanceException;
 import ru.sf.ibapi.repositories.CustomerRepository;
+import ru.sf.ibapi.services.balance.BalanceHandler;
 
 @RequiredArgsConstructor
 @Service
@@ -27,8 +29,10 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerDto updateName(CustomerDto customerDto) {
-        Customer customer = dtoToEntity(customerDto);
+    public CustomerDto updateName(Long id, String firstName, String lastName) {
+        Customer customer = customerRepository.findById(id).orElseThrow();
+        customer.setFirstName(firstName);
+        customer.setLastName(lastName);
         return entityToDto(customerRepository.save(customer));
     }
 
@@ -40,19 +44,24 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Long getBalance(Long id) {
         Customer customer = customerRepository.findById(id).orElseThrow();
+
         return customer.getBalanceInRoubles();
     }
 
+    @Transactional
     @Override
-    public Long putMoney(Long id, Long amount) throws BalanceException {
+    public void putMoney(Long id, Long amount) throws ChangeBalanceException {
         Customer customer = customerRepository.findById(id).orElseThrow();
-        return balanceHandler.putMoney(customer, amount);
+        Long newBalance = balanceHandler.putMoney(customer, amount);
+        customer.setBalanceInRoubles(newBalance);
     }
 
+    @Transactional
     @Override
-    public Long takeMoney(Long id, Long amount) throws BalanceException {
+    public void takeMoney(Long id, Long amount) throws ChangeBalanceException {
         Customer customer = customerRepository.findById(id).orElseThrow();
-        return balanceHandler.takeMoney(customer, amount);
+        Long newBalance = balanceHandler.takeMoney(customer, amount);
+        customer.setBalanceInRoubles(newBalance);
     }
 
     private CustomerDto entityToDto(Customer customer) {
