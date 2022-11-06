@@ -8,9 +8,11 @@ import ru.sf.ibapi.apiresponses.responsecodes.ApiResponseCodes;
 public class ApiException extends Exception {
     private final ApiResponseCodes code;
     private final HttpStatus status;
+    private final String message;
     public ApiException(String message, ApiResponseCodes code, HttpStatus status) {
-        super(message);
+        super();
         this.code = code;
         this.status = status;
+        this.message = message;
     }
 }
