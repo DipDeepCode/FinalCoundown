@@ -7,7 +7,7 @@ import ru.sf.ibapi.apiresponses.responsebuilder.ApiResponseBuilder;
 import static ru.sf.ibapi.apiresponses.responsecodes.ApiResponseCodes.CHANGE_BALANCE_SUCCESSFUL;
 
 import ru.sf.ibapi.dto.CustomerDto;
-import ru.sf.ibapi.exceptions.ChangeBalanceException;
+import ru.sf.ibapi.exceptions.ApiException;
 import ru.sf.ibapi.services.customer.CustomerService;
 
 @RequiredArgsConstructor
@@ -44,13 +44,13 @@ public class CustomerController {
     }
 
     @PutMapping("/balance/put")
-    public ApiResponse putMoney(@RequestParam Long id, Long amount) throws ChangeBalanceException {
+    public ApiResponse putMoney(@RequestParam Long id, Long amount) throws ApiException {
         customerService.putMoney(id, amount);
         return apiResponseBuilder.buildSuccessfulResponse(CHANGE_BALANCE_SUCCESSFUL);
     }
 
     @PutMapping("/balance/take")
-    public ApiResponse takeMoney(@RequestParam Long id, Long amount) throws ChangeBalanceException {
+    public ApiResponse takeMoney(@RequestParam Long id, Long amount) throws ApiException {
         customerService.takeMoney(id, amount);
         return apiResponseBuilder.buildSuccessfulResponse(CHANGE_BALANCE_SUCCESSFUL);
     }

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.sf.ibapi.dto.CustomerDto;
 import ru.sf.ibapi.entities.Customer;
-import ru.sf.ibapi.exceptions.ChangeBalanceException;
+import ru.sf.ibapi.exceptions.ApiException;
 import ru.sf.ibapi.repositories.CustomerRepository;
 import ru.sf.ibapi.services.balance.BalanceHandler;
 
@@ -50,7 +50,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Transactional
     @Override
-    public void putMoney(Long id, Long amount) throws ChangeBalanceException {
+    public void putMoney(Long id, Long amount) throws ApiException {
         Customer customer = customerRepository.findById(id).orElseThrow();
         Long newBalance = balanceHandler.putMoney(customer, amount);
         customer.setBalanceInRoubles(newBalance);
@@ -58,7 +58,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Transactional
     @Override
-    public void takeMoney(Long id, Long amount) throws ChangeBalanceException {
+    public void takeMoney(Long id, Long amount) throws ApiException {
         Customer customer = customerRepository.findById(id).orElseThrow();
         Long newBalance = balanceHandler.takeMoney(customer, amount);
         customer.setBalanceInRoubles(newBalance);
