@@ -6,11 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import ru.sf.ibapi.apiresponses.ApiResponse;
-import ru.sf.ibapi.apiresponses.ApiResponseBuilder;
+import ru.sf.ibapi.apiresponses.responses.ApiResponse;
+import ru.sf.ibapi.apiresponses.responsebuilder.ApiResponseBuilder;
 import ru.sf.ibapi.exceptions.ChangeBalanceException;
-import static ru.sf.ibapi.apiresponses.ApiResponseCodes.CHANGE_BALANCE_ERROR;
-import static ru.sf.ibapi.apiresponses.ApiResponseCodes.GENERAL_ERROR;
+import static ru.sf.ibapi.apiresponses.responsecodes.ApiResponseCodes.CHANGE_BALANCE_ERROR;
+import static ru.sf.ibapi.apiresponses.responsecodes.ApiResponseCodes.GENERAL_ERROR;
 
 @RequiredArgsConstructor
 @ControllerAdvice

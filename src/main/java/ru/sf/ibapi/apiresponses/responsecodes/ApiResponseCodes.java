@@ -1,4 +1,4 @@
-package ru.sf.ibapi.apiresponses;
+package ru.sf.ibapi.apiresponses.responsecodes;
 
 import lombok.Getter;
 

@@ -1,12 +1,10 @@
 package ru.sf.ibapi.controllers;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.sf.ibapi.apiresponses.ApiResponse;
-import ru.sf.ibapi.apiresponses.ApiResponseBuilder;
-import static ru.sf.ibapi.apiresponses.ApiResponseCodes.CHANGE_BALANCE_SUCCESSFUL;
+import ru.sf.ibapi.apiresponses.responses.ApiResponse;
+import ru.sf.ibapi.apiresponses.responsebuilder.ApiResponseBuilder;
+import static ru.sf.ibapi.apiresponses.responsecodes.ApiResponseCodes.CHANGE_BALANCE_SUCCESSFUL;
 
 import ru.sf.ibapi.dto.CustomerDto;
 import ru.sf.ibapi.exceptions.ChangeBalanceException;
@@ -20,18 +18,18 @@ public class CustomerController {
     private final ApiResponseBuilder apiResponseBuilder;
 
     @PostMapping("/add")
-    public ResponseEntity<CustomerDto> add(@RequestBody CustomerDto customerDto) {
-        return new ResponseEntity<>(customerService.add(customerDto), HttpStatus.OK);
+    public CustomerDto add(@RequestBody CustomerDto customerDto) {
+        return customerService.add(customerDto);
     }
 
     @GetMapping("/find")
-    public ResponseEntity<CustomerDto> find(@RequestParam Long id) {
-        return new ResponseEntity<>(customerService.find(id), HttpStatus.OK);
+    public CustomerDto find(@RequestParam Long id) {
+        return customerService.find(id);
     }
 
     @PutMapping("/updatename")
-    public ResponseEntity<CustomerDto> updateName(@RequestParam Long id, String firstName, String lastName) {
-        return new ResponseEntity<>(customerService.updateName(id, firstName, lastName), HttpStatus.OK);
+    public CustomerDto updateName(@RequestParam Long id, String firstName, String lastName) {
+        return customerService.updateName(id, firstName, lastName);
     }
 
     @DeleteMapping("/delete")

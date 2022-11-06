@@ -23,5 +23,5 @@ public class Customer {
     private String firstName;
 
     @Column(name = "balance", nullable = false)
-    private Long balanceInRoubles;
+    private Long balanceInRoubles = 0L;
 }
