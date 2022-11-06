@@ -10,6 +10,8 @@ import ru.sf.ibapi.dto.CustomerDto;
 import ru.sf.ibapi.exceptions.ApiException;
 import ru.sf.ibapi.services.customer.CustomerService;
 
+import javax.validation.Valid;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/customer")
@@ -18,7 +20,7 @@ public class CustomerController {
     private final ApiResponseBuilder apiResponseBuilder;
 
     @PostMapping("/add")
-    public CustomerDto add(@RequestBody CustomerDto customerDto) {
+    public CustomerDto add(@Valid @RequestBody CustomerDto customerDto) {
         return customerService.add(customerDto);
     }
 
