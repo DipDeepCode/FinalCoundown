@@ -24,15 +24,13 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void putMoney(Long id, Long amount) throws ChangeBalanceException {
         Customer customer = customerRepository.findById(id).orElseThrow();
-        Long newBalance = balanceHandler.putMoney(customer, amount);
-        customer.setBalance(newBalance);
+        balanceHandler.putMoney(customer, amount);
     }
 
     @Transactional
     @Override
     public void takeMoney(Long id, Long amount) throws ChangeBalanceException {
         Customer customer = customerRepository.findById(id).orElseThrow();
-        Long newBalance = balanceHandler.takeMoney(customer, amount);
-        customer.setBalance(newBalance);
+        balanceHandler.takeMoney(customer, amount);
     }
 }
