@@ -13,23 +13,23 @@ public class BalanceHandlerImpl implements BalanceHandler {
     private final Long minBalanceValue;
 
     @Override
-    public Long putMoney(Customer customer, Long amount) throws ChangeBalanceException {
+    public void putMoney(Customer customer, Long amount) throws ChangeBalanceException {
         Long currentBalance = customer.getBalance();
         long futureBalance = currentBalance + amount;
         if (futureBalance > maxBalanceValue) {
             throw new ChangeBalanceException("Превышен максимальный лимит", CHANGE_BALANCE_ERROR, HttpStatus.CONFLICT);
         }
-        return futureBalance;
+        customer.setBalance(futureBalance);
     }
 
     @Override
-    public Long takeMoney(Customer customer, Long amount) throws ChangeBalanceException {
+    public void takeMoney(Customer customer, Long amount) throws ChangeBalanceException {
         Long currentBalance = customer.getBalance();
         long futureBalance = currentBalance - amount;
         if (futureBalance < minBalanceValue) {
             throw new ChangeBalanceException("Недостаточно средств на счете", CHANGE_BALANCE_ERROR, HttpStatus.CONFLICT);
         }
-        return futureBalance;
+        customer.setBalance(futureBalance);
     }
 }
 

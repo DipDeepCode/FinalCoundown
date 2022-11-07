@@ -5,6 +5,6 @@ import ru.sf.ibapi.exceptions.ChangeBalanceException;
 
 public interface BalanceHandler {
 
-    Long putMoney(Customer customer, Long amount) throws ChangeBalanceException;
-    Long takeMoney(Customer customer, Long amount) throws ChangeBalanceException;
+    void putMoney(Customer customer, Long amount) throws ChangeBalanceException;
+    void takeMoney(Customer customer, Long amount) throws ChangeBalanceException;
 }
