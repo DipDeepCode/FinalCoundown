@@ -5,11 +5,11 @@ import org.springframework.http.HttpStatus;
 import ru.sf.ibapi.apiresponses.responsecodes.ApiResponseCodes;
 
 @Getter
-public class ApiException extends Exception {
+public class ChangeBalanceException extends Exception {
     private final ApiResponseCodes code;
     private final HttpStatus status;
     private final String message;
-    public ApiException(String message, ApiResponseCodes code, HttpStatus status) {
+    public ChangeBalanceException(String message, ApiResponseCodes code, HttpStatus status) {
         super();
         this.code = code;
         this.status = status;

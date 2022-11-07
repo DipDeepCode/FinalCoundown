@@ -16,12 +16,6 @@ public class Customer {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "last_name", nullable = false)
-    private String lastName;
-
-    @Column(name = "first_name", nullable = false)
-    private String firstName;
-
     @Column(name = "balance", nullable = false)
-    private Long balanceInRoubles = 0L;
+    private Long balance = 0L;
 }
