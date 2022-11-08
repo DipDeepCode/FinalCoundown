@@ -6,7 +6,6 @@ import javax.persistence.*;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
 @Entity
 @Table(name = "customer")
 public class Customer {
@@ -15,6 +14,9 @@ public class Customer {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "balance", nullable = false)
-    private Long balance = 0L;
+    @Column(name = "firstname", nullable = false)
+    private String firstname;
+
+    @Column(name = "lastname", nullable = false)
+    private String lastname;
 }

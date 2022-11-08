@@ -1,36 +1,57 @@
 package ru.sf.ibapi.services.customer;
 
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.sf.ibapi.dto.CustomerDto;
+import ru.sf.ibapi.entities.Balance;
 import ru.sf.ibapi.entities.Customer;
-import ru.sf.ibapi.exceptions.ChangeBalanceException;
+import ru.sf.ibapi.repositories.BalanceRepository;
 import ru.sf.ibapi.repositories.CustomerRepository;
-import ru.sf.ibapi.services.balance.BalanceHandler;
 
 @RequiredArgsConstructor
 @Service
 public class CustomerServiceImpl implements CustomerService {
+    private final ModelMapper modelMapper;
     private final CustomerRepository customerRepository;
-    private final BalanceHandler balanceHandler;
+    private final BalanceRepository balanceRepository;
+    private final Balance balance;
 
     @Override
-    public Long getBalance(Long id) {
-        Customer customer = customerRepository.findById(id).orElseThrow();
-        return customer.getBalance();
+    public CustomerDto add(CustomerDto customerDto) {
+        Customer customer = dtoToEntity(customerDto);
+        customer = customerRepository.save(customer);
+        balance.setCustomer(customer);
+        balanceRepository.save(balance);
+        return entityToDto(customer);
     }
 
     @Transactional
     @Override
-    public void putMoney(Long id, Long amount) throws ChangeBalanceException {
+    public CustomerDto update(Long id, String firstname, String lastname) {
         Customer customer = customerRepository.findById(id).orElseThrow();
-        balanceHandler.putMoney(customer, amount);
+        customer.setFirstname(firstname);
+        customer.setLastname(lastname);
+        return entityToDto(customer);
     }
 
-    @Transactional
     @Override
-    public void takeMoney(Long id, Long amount) throws ChangeBalanceException {
+    public CustomerDto find(Long id) {
         Customer customer = customerRepository.findById(id).orElseThrow();
-        balanceHandler.takeMoney(customer, amount);
+        return entityToDto(customer);
+    }
+
+    @Override
+    public void delete(Long id) {
+        customerRepository.deleteById(id);
+    }
+
+    private CustomerDto entityToDto(Customer customer) {
+        return modelMapper.map(customer, CustomerDto.class);
+    }
+
+    private Customer dtoToEntity(CustomerDto customerDto) {
+        return modelMapper.map(customerDto, Customer.class);
     }
 }

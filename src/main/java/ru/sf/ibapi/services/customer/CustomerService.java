@@ -1,12 +1,14 @@
 package ru.sf.ibapi.services.customer;
 
-import org.springframework.stereotype.Service;
-import ru.sf.ibapi.exceptions.ChangeBalanceException;
+import ru.sf.ibapi.dto.CustomerDto;
 
-@Service
 public interface CustomerService {
 
-    Long getBalance(Long id);
-    void putMoney(Long id, Long amount) throws ChangeBalanceException;
-    void takeMoney(Long id, Long amount) throws ChangeBalanceException;
+    CustomerDto add(CustomerDto customerDto);
+
+    CustomerDto update(Long id, String firstname, String lastname);
+
+    CustomerDto find(Long id);
+
+    void delete(Long id);
 }
