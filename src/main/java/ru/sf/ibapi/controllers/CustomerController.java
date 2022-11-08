@@ -3,40 +3,41 @@ package ru.sf.ibapi.controllers;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.sf.ibapi.apiresponses.responses.ApiResponse;
-import ru.sf.ibapi.apiresponses.responsebuilder.ApiResponseBuilder;
-import static ru.sf.ibapi.apiresponses.responsecodes.ApiResponseCodes.CHANGE_BALANCE_SUCCESSFUL;
 
-import ru.sf.ibapi.exceptions.ChangeBalanceException;
+import ru.sf.ibapi.dto.CustomerDto;
 import ru.sf.ibapi.services.customer.CustomerService;
+
+import javax.validation.Valid;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/customer")
 public class CustomerController {
     private final CustomerService customerService;
-    private final ApiResponseBuilder apiResponseBuilder;
 
-    @GetMapping("/balance/get")
-    @Operation(summary = "Get balance", description = "Получить текущий баланс пользователя")
-    public ApiResponse getBalance(@RequestParam Long id) {
-        long balance = customerService.getBalance(id);
-        return apiResponseBuilder.buildBalanceResponse(balance);
+    @PostMapping("/add")
+    @Operation(summary = "Add customer", description = "Добавить пользователя")
+    public CustomerDto addCustomer(@Valid @RequestBody CustomerDto customerDto) {
+        return customerService.add(customerDto);
     }
 
-    @PutMapping("/balance/put")
-    @Operation(summary = "Put money", description = "Пополнение баланса пользователя на заданную сумму")
-    public ApiResponse putMoney(@RequestParam Long id,
-                                @RequestParam Long amount) throws ChangeBalanceException {
-        customerService.putMoney(id, amount);
-        return apiResponseBuilder.buildSuccessfulResponse(CHANGE_BALANCE_SUCCESSFUL);
+    @PutMapping("/update")
+    @Operation(summary = "Update customer", description = "Изменение имени и фамилии пользователя по id")
+    public CustomerDto updateCustomer(@RequestParam Long id,
+                                      @RequestParam String firstname,
+                                      @RequestParam String lastname) {
+        return customerService.update(id, firstname, lastname);
     }
 
-    @PutMapping("/balance/take")
-    @Operation(summary = "Take money", description = "Снятие заданной суммы с баланса пользователя")
-    public ApiResponse takeMoney(@RequestParam Long id,
-                                 @RequestParam Long amount) throws ChangeBalanceException {
-        customerService.takeMoney(id, amount);
-        return apiResponseBuilder.buildSuccessfulResponse(CHANGE_BALANCE_SUCCESSFUL);
+    @GetMapping("/find")
+    @Operation(summary = "Find customer", description = "Поиск пользователя по id")
+    public CustomerDto findCustomer(@RequestParam Long id) {
+        return customerService.find(id);
+    }
+
+    @DeleteMapping("/delete")
+    @Operation(summary = "Delete customer", description = "Удаление пользователя по id")
+    public void deleteCustomer(Long id) {
+        customerService.delete(id);
     }
 }
