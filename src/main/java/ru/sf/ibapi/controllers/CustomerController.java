@@ -37,7 +37,7 @@ public class CustomerController {
 
     @DeleteMapping("/delete")
     @Operation(summary = "Delete customer", description = "Удаление пользователя по id")
-    public void deleteCustomer(Long id) {
+    public void deleteCustomer(@RequestParam Long id) {
         customerService.delete(id);
     }
 }

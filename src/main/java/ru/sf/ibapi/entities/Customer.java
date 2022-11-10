@@ -19,4 +19,8 @@ public class Customer {
 
     @Column(name = "lastname", nullable = false)
     private String lastname;
+
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, optional = false, orphanRemoval = true)
+    @JoinColumn(name = "balance_id", nullable = false)
+    private Balance balance;
 }

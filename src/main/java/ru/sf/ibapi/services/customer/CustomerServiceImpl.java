@@ -5,9 +5,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.sf.ibapi.dto.CustomerDto;
-import ru.sf.ibapi.entities.Balance;
 import ru.sf.ibapi.entities.Customer;
-import ru.sf.ibapi.repositories.BalanceRepository;
+import ru.sf.ibapi.entities.balancefabric.BalanceFabric;
 import ru.sf.ibapi.repositories.CustomerRepository;
 
 @RequiredArgsConstructor
@@ -15,15 +14,13 @@ import ru.sf.ibapi.repositories.CustomerRepository;
 public class CustomerServiceImpl implements CustomerService {
     private final ModelMapper modelMapper;
     private final CustomerRepository customerRepository;
-    private final BalanceRepository balanceRepository;
-    private final Balance balance;
+    private final BalanceFabric balanceFabric;
 
     @Override
     public CustomerDto add(CustomerDto customerDto) {
         Customer customer = dtoToEntity(customerDto);
+        customer.setBalance(balanceFabric.getBlancBalance());
         customer = customerRepository.save(customer);
-        balance.setCustomer(customer);
-        balanceRepository.save(balance);
         return entityToDto(customer);
     }
 

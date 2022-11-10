@@ -4,28 +4,31 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.sf.ibapi.entities.Balance;
+import ru.sf.ibapi.entities.Customer;
 import ru.sf.ibapi.exceptions.ChangeBalanceException;
-import ru.sf.ibapi.repositories.BalanceRepository;
+import ru.sf.ibapi.repositories.CustomerRepository;
 
 import static ru.sf.ibapi.apiresponses.responsecodes.ApiResponseCodes.CHANGE_BALANCE_ERROR;
 
 @RequiredArgsConstructor
 @Service
 public class BalanceServiceImpl implements BalanceService {
-    private final BalanceRepository balanceRepository;
+    private final CustomerRepository customerRepository;
     private static final Long MIN_BALANCE_VALUE = 0L;
     private static final Long MAX_BALANCE_VALUE = 1_000_000L;
 
     @Override
-    public Long getBalance(Long id) {
-        Balance balance = balanceRepository.findBalanceByCustomerId(id);
+    public Long getBalance(Long customerId) {
+        Customer customer = customerRepository.findById(customerId).orElseThrow();
+        Balance balance = customer.getBalance();
         return balance.getBalance();
     }
 
     @Transactional
     @Override
-    public void putMoney(Long id, Long amount) throws ChangeBalanceException {
-        Balance balance = balanceRepository.findBalanceByCustomerId(id);
+    public void putMoney(Long customerId, Long amount) throws ChangeBalanceException {
+        Customer customer = customerRepository.findById(customerId).orElseThrow();
+        Balance balance = customer.getBalance();
         Long currentBalance = balance.getBalance();
         Long futureBalance = currentBalance + amount;
         if (isBalanceInLimits(futureBalance)) {
@@ -36,8 +39,9 @@ public class BalanceServiceImpl implements BalanceService {
 
     @Transactional
     @Override
-    public void takeMoney(Long id, Long amount) throws ChangeBalanceException {
-        Balance balance = balanceRepository.findBalanceByCustomerId(id);
+    public void takeMoney(Long customerId, Long amount) throws ChangeBalanceException {
+        Customer customer = customerRepository.findById(customerId).orElseThrow();
+        Balance balance = customer.getBalance();
         Long currentBalance = balance.getBalance();
         Long futureBalance = currentBalance - amount;
         if (isBalanceInLimits(futureBalance)) {
