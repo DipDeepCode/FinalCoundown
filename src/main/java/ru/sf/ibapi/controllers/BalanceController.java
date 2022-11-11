@@ -19,24 +19,24 @@ public class BalanceController {
 
     @GetMapping("/get")
     @Operation(summary = "Get balance", description = "Получить текущий баланс пользователя")
-    public ApiResponse getBalance(@RequestParam Long id) {
-        Long balance = balanceService.getBalance(id);
+    public ApiResponse getBalance(@RequestParam Long customerId) {
+        Long balance = balanceService.getBalance(customerId);
         return apiResponseBuilder.buildBalanceResponse(balance);
     }
 
     @PutMapping("/put")
     @Operation(summary = "Put money", description = "Пополнение баланса пользователя на заданную сумму")
-    public ApiResponse putMoney(@RequestParam Long id,
+    public ApiResponse putMoney(@RequestParam Long customerId,
                                 @RequestParam Long amount) throws ChangeBalanceException {
-        balanceService.putMoney(id, amount);
+        balanceService.putMoney(customerId, amount);
         return apiResponseBuilder.buildSuccessfulResponse(CHANGE_BALANCE_SUCCESSFUL);
     }
 
     @PutMapping("/take")
     @Operation(summary = "Take money", description = "Снятие заданной суммы с баланса пользователя")
-    public ApiResponse takeMoney(@RequestParam Long id,
+    public ApiResponse takeMoney(@RequestParam Long customerId,
                                  @RequestParam Long amount) throws ChangeBalanceException {
-        balanceService.takeMoney(id, amount);
+        balanceService.takeMoney(customerId, amount);
         return apiResponseBuilder.buildSuccessfulResponse(CHANGE_BALANCE_SUCCESSFUL);
     }
 }
