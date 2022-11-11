@@ -8,6 +8,8 @@ import ru.sf.ibapi.entities.Customer;
 import ru.sf.ibapi.exceptions.ChangeBalanceException;
 import ru.sf.ibapi.repositories.CustomerRepository;
 
+import javax.persistence.EntityNotFoundException;
+
 import static ru.sf.ibapi.apiresponses.responsecodes.ApiResponseCodes.CHANGE_BALANCE_ERROR;
 
 @RequiredArgsConstructor
@@ -19,7 +21,8 @@ public class BalanceServiceImpl implements BalanceService {
 
     @Override
     public Long getBalance(Long customerId) {
-        Customer customer = customerRepository.findById(customerId).orElseThrow();
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
         Balance balance = customer.getBalance();
         return balance.getBalance();
     }
@@ -27,7 +30,8 @@ public class BalanceServiceImpl implements BalanceService {
     @Transactional
     @Override
     public void putMoney(Long customerId, Long amount) throws ChangeBalanceException {
-        Customer customer = customerRepository.findById(customerId).orElseThrow();
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
         Balance balance = customer.getBalance();
         Long currentBalance = balance.getBalance();
         Long futureBalance = currentBalance + amount;
@@ -40,7 +44,8 @@ public class BalanceServiceImpl implements BalanceService {
     @Transactional
     @Override
     public void takeMoney(Long customerId, Long amount) throws ChangeBalanceException {
-        Customer customer = customerRepository.findById(customerId).orElseThrow();
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
         Balance balance = customer.getBalance();
         Long currentBalance = balance.getBalance();
         Long futureBalance = currentBalance - amount;
