@@ -1,8 +1,10 @@
 package ru.sf.ibapi.entities;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.ZonedDateTime;
 
 @Getter
 @Setter
@@ -20,7 +22,13 @@ public class Customer {
     @Column(name = "lastname", nullable = false)
     private String lastname;
 
-    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, optional = false, orphanRemoval = true)
-    @JoinColumn(name = "balance_id", nullable = false)
+    @OneToOne(mappedBy = "customer", orphanRemoval = true)
     private Balance balance;
+
+    @Column(name = "created_timestamp", nullable = false)
+    private ZonedDateTime createdTimestamp;
+
+    @Column(name = "disabled_timestamp")
+    private ZonedDateTime disabledTimestamp;
+
 }

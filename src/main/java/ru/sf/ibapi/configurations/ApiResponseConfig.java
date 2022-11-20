@@ -1,4 +1,4 @@
-package ru.sf.ibapi.configuration;
+package ru.sf.ibapi.configurations;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

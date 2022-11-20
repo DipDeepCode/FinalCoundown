@@ -9,16 +9,14 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import ru.sf.ibapi.apiresponses.responsecodes.ApiResponseCodes;
-import ru.sf.ibapi.apiresponses.responses.ApiResponse;
 import ru.sf.ibapi.apiresponses.responsebuilder.ApiResponseBuilder;
+import ru.sf.ibapi.apiresponses.responses.ApiResponse;
+import ru.sf.ibapi.apiresponses.responses.ApiResponseCode;
 import ru.sf.ibapi.exceptions.ChangeBalanceException;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static ru.sf.ibapi.apiresponses.responsecodes.ApiResponseCodes.GENERAL_ERROR;
 
 @RequiredArgsConstructor
 @ControllerAdvice
@@ -27,7 +25,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ChangeBalanceException.class)
     protected ResponseEntity<Object> handleApiExceptions(ChangeBalanceException ex) {
-        ApiResponse response = apiResponseBuilder.buildErrorResponse(ex.getCode(), ex.getMessage());
+        ApiResponse response = apiResponseBuilder.buildErrorResponse(ApiResponseCode.CHANGE_BALANCE_ERROR, ex.getMessage());
         HttpStatus status = HttpStatus.BAD_REQUEST;
         return new ResponseEntity<>(response, status);
     }
@@ -39,15 +37,13 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                                                                   WebRequest request) {
         List<String> messages = new ArrayList<>();
         ex.getBindingResult().getAllErrors().forEach(objectError -> messages.add(objectError.getDefaultMessage()));
-        ApiResponseCodes code = GENERAL_ERROR;
-        ApiResponse response = apiResponseBuilder.buildErrorResponse(code, messages.toString());
+        ApiResponse response = apiResponseBuilder.buildErrorResponse(ApiResponseCode.ARGUMENT_NOT_VALID, messages.toString());
         return new ResponseEntity<>(response, status);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
     protected ResponseEntity<Object> handleEntityNotFoundException (EntityNotFoundException ex) {
-        ApiResponseCodes code = GENERAL_ERROR;
-        ApiResponse response = apiResponseBuilder.buildErrorResponse(code, ex.getMessage());
+        ApiResponse response = apiResponseBuilder.buildErrorResponse(ApiResponseCode.CUSTOMER_NOT_FOUND, ex.getMessage());
         HttpStatus status = HttpStatus.NOT_FOUND;
         return new ResponseEntity<>(response, status);
     }
@@ -58,7 +54,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                                                              HttpHeaders headers,
                                                              HttpStatus status,
                                                              WebRequest request) {
-        ApiResponse response = apiResponseBuilder.buildErrorResponse(GENERAL_ERROR, ex.getMessage());
+        ApiResponse response = apiResponseBuilder.buildErrorResponse(ApiResponseCode.GENERAL_ERROR, ex.getMessage());
         return new ResponseEntity<>(response, status);
     }
 }

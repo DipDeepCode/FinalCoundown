@@ -1,43 +1,51 @@
 package ru.sf.ibapi.controllers;
 
-import io.swagger.v3.oas.annotations.Operation;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
+import ru.sf.ibapi.custommapper.CustomMapper;
 import ru.sf.ibapi.dto.CustomerDto;
+import ru.sf.ibapi.entities.Customer;
 import ru.sf.ibapi.services.customer.CustomerService;
 
 import javax.validation.Valid;
 
-@RequiredArgsConstructor
 @RestController
-@RequestMapping("/customer")
-public class CustomerController {
+@RequestMapping("customer")
+public class CustomerController { //TODO добавить логгирование запросов
     private final CustomerService customerService;
+    private final CustomMapper customMapper;
 
-    @PostMapping("/add")
-    @Operation(summary = "Add customer", description = "Добавить пользователя")
-    public CustomerDto addCustomer(@Valid @RequestBody CustomerDto customerDto) {
-        return customerService.add(customerDto);
+    @Autowired
+    public CustomerController(CustomerService customerService,
+                              CustomMapper customMapper) {
+        this.customerService = customerService;
+        this.customMapper = customMapper;
     }
 
-    @PutMapping("/update")
-    @Operation(summary = "Update customer", description = "Изменение имени и фамилии пользователя по id")
-    public CustomerDto updateCustomer(@RequestParam Long id,
-                                      @RequestParam String firstname,
-                                      @RequestParam String lastname) {
-        return customerService.update(id, firstname, lastname);
+    @PostMapping("/add")
+    public CustomerDto addCustomer(@Valid @RequestBody CustomerDto customerDto) {
+        Customer customer = customMapper.map(customerDto, Customer.class);
+        customer = customerService.saveCustomer(customer);
+        return customMapper.map(customer, CustomerDto.class);
     }
 
     @GetMapping("/find")
-    @Operation(summary = "Find customer", description = "Поиск пользователя по id")
-    public CustomerDto findCustomer(@RequestParam Long id) {
-        return customerService.find(id);
+    public CustomerDto findCustomer(@RequestParam Long customerId) {
+        Customer customer = customerService.findCustomer(customerId);
+        return customMapper.map(customer, CustomerDto.class);
     }
 
-    @DeleteMapping("/delete")
-    @Operation(summary = "Delete customer", description = "Удаление пользователя по id")
-    public void deleteCustomer(@RequestParam Long id) {
-        customerService.delete(id);
+    @PutMapping("/updatenames")
+    public CustomerDto updateCustomerNames(@RequestParam Long customerId,
+                                           @RequestParam String firstname,
+                                           @RequestParam String lastname) {
+        Customer customer = customerService.updateCustomerNames(customerId, firstname, lastname);
+        return customMapper.map(customer, CustomerDto.class);
+    }
+
+    @DeleteMapping("delete")
+    public void deleteCustomer(@RequestParam Long customerId) {
+        customerService.deleteCustomer(customerId);
     }
 }
+

@@ -1,61 +1,91 @@
 package ru.sf.ibapi.services.balance;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.sf.ibapi.entities.Balance;
 import ru.sf.ibapi.entities.Customer;
+import ru.sf.ibapi.entities.Operation;
+import ru.sf.ibapi.entities.fabrics.BalanceFabric;
 import ru.sf.ibapi.exceptions.ChangeBalanceException;
-import ru.sf.ibapi.repositories.CustomerRepository;
+import ru.sf.ibapi.repositories.BalanceRepository;
+import ru.sf.ibapi.services.balansehandler.BalanceHandler;
+import ru.sf.ibapi.services.customer.CustomerService;
+import ru.sf.ibapi.services.operation.OperationService;
+import ru.sf.ibapi.services.transfer.TransferService;
 
-import javax.persistence.EntityNotFoundException;
+import static ru.sf.ibapi.operationcodes.OperationCode.*;
 
-import static ru.sf.ibapi.apiresponses.responsecodes.ApiResponseCodes.CHANGE_BALANCE_ERROR;
-
-@RequiredArgsConstructor
 @Service
 public class BalanceServiceImpl implements BalanceService {
-    private final CustomerRepository customerRepository;
-    private static final Long MIN_BALANCE_VALUE = 0L;
-    private static final Long MAX_BALANCE_VALUE = 1_000_000L;
+    private final BalanceHandler balanceHandler;
+    private final BalanceRepository balanceRepository;
+    private final BalanceFabric balanceFabric;
+    private final CustomerService customerService;
+    private final TransferService transferService;
+    private final OperationService operationService;
 
-    @Override
-    public Long getBalance(Long customerId) {
-        Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
-        Balance balance = customer.getBalance();
-        return balance.getBalance();
+    @Autowired
+    public BalanceServiceImpl(BalanceHandler balanceHandler,
+                              BalanceRepository balanceRepository,
+                              BalanceFabric balanceFabric,
+                              @Lazy CustomerService customerService,
+                              @Lazy TransferService transferService,
+                              @Lazy OperationService operationService) {
+        this.balanceHandler = balanceHandler;
+        this.balanceRepository = balanceRepository;
+        this.balanceFabric = balanceFabric;
+        this.customerService = customerService;
+        this.transferService = transferService;
+        this.operationService = operationService;
     }
 
-    @Transactional
+    @Override
+    public Balance getBalance(Long customerId) {
+        Customer customer = customerService.findCustomer(customerId);
+        return customer.getBalance();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void putMoney(Long customerId, Long amount) throws ChangeBalanceException {
-        Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
+        Customer customer = customerService.findCustomer(customerId);
         Balance balance = customer.getBalance();
-        Long currentBalance = balance.getBalance();
-        Long futureBalance = currentBalance + amount;
-        if (isBalanceInLimits(futureBalance)) {
-            throw new ChangeBalanceException("Превышен максимальный лимит", CHANGE_BALANCE_ERROR);
-        }
-        balance.setBalance(futureBalance);
+        balance.setBalance(balanceHandler.putMoney(balance.getBalance(), amount));
+        balanceRepository.save(balance);
+        operationService.addOperation(PUT_MONEY, amount, customer);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void takeMoney(Long customerId, Long amount) throws ChangeBalanceException {
-        Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
+        Customer customer = customerService.findCustomer(customerId);
         Balance balance = customer.getBalance();
-        Long currentBalance = balance.getBalance();
-        Long futureBalance = currentBalance - amount;
-        if (isBalanceInLimits(futureBalance)) {
-            throw new ChangeBalanceException("Недостаточно средств на счете", CHANGE_BALANCE_ERROR);
-        }
-        balance.setBalance(futureBalance);
+        balance.setBalance(balanceHandler.takeMoney(balance.getBalance(), amount));
+        balanceRepository.save(balance);
+        operationService.addOperation(TAKE_MONEY, amount, customer);
+    }
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void transferMoney(Long senderCustomerId, Long recipientCustomerId, Long amount) throws ChangeBalanceException {
+        Customer sender = customerService.findCustomer(senderCustomerId);
+        Balance senderBalance = sender.getBalance();
+        senderBalance.setBalance(balanceHandler.takeMoney(senderBalance.getBalance(), amount));
+        Operation senderOperation = operationService.addOperation(TRANSFER_MONEY_SEND, amount, sender);
+
+        Customer recipient = customerService.findCustomer(recipientCustomerId);
+        Balance recipientBalance = recipient.getBalance();
+        recipientBalance.setBalance(balanceHandler.putMoney(recipientBalance.getBalance(), amount));
+        Operation recipientOperation = operationService.addOperation(TRANSFER_MONEY_RECEIVE, amount, recipient);
+
+        transferService.addTransfer(senderOperation, recipientOperation);
     }
 
-    private boolean isBalanceInLimits(Long value) {
-        return value < MIN_BALANCE_VALUE || value > MAX_BALANCE_VALUE;
+    public void attachCustomerToBlancBalance(Customer customer) {
+        Balance balance = balanceFabric.getBlancBalance();
+        balance.setCustomer(customer);
+        balanceRepository.save(balance);
     }
+
 }

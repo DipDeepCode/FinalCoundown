@@ -11,9 +11,8 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 public class CustomerDto implements Serializable {
-    private Long id;
-    @NotBlank(message = "Поле lastname не может быть пустым")
-    private String lastname;
     @NotBlank(message = "Поле firstname не может быть пустым")
     private String firstname;
+    @NotBlank(message = "Поле lastname не может быть пустым")
+    private String lastname;
 }

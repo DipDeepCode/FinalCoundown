@@ -1,6 +1,7 @@
 package ru.sf.ibapi.entities;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -16,4 +17,8 @@ public class Balance {
 
     @Column(name = "balance", nullable = false)
     private Long balance;
+
+    @OneToOne(optional = false, orphanRemoval = true)
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
 }
