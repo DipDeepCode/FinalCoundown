@@ -1,0 +1,30 @@
+version: "3.9"
+
+volumes:
+  ibapi_vol:
+
+services:
+  postgres:
+    image: postgres:15.0-alpine
+    volumes:
+      - ibapi_vol:/var/lib/postgresql/data
+    restart: always
+    environment:
+      - POSTGRES_DB=ibapi_DB
+      - POSTGRES_USER=ibapi_DB_user
+      - POSTGRES_PASSWORD=ibapi_DB_pass
+
+  api-service:
+    depends_on:
+      - postgres
+    image: dipdeepcode/ibapi-service-v1.1
+    restart: always
+    environment:
+      - TZ=Europe/Moscow
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/ibapi_DB
+      - SPRING_DATASOURCE_USERNAME=ibapi_DB_user
+      - SPRING_DATASOURCE_PASSWORD=ibapi_DB_pass
+      - POSTGRES_DB_ADDR=postgres
+      - POSTGRES_DB_PORT=5432
+    ports:
+      - '8080:8080'

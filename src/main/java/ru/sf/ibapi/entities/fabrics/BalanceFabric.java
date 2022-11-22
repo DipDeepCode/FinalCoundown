@@ -1,12 +1,11 @@
-package ru.sf.ibapi.entities.balancefabric;
+package ru.sf.ibapi.entities.fabrics;
 
 import org.springframework.stereotype.Component;
 import ru.sf.ibapi.entities.Balance;
 
 @Component
-public class BalanceFabricImpl implements BalanceFabric {
+public class BalanceFabric {
 
-    @Override
     public Balance getBlancBalance() {
         Balance balance = new Balance();
         balance.setBalance(0L);
