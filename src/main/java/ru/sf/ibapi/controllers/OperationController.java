@@ -28,6 +28,10 @@ public class OperationController {
     }
 
     @GetMapping("/getList")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Получение списка операций с балансом за указанный период",
+            description = "При передаче только customerId будет возвращен полный список операций с балансом в формате json." +
+                    "При передаче кроме id начальной и конечной даты будет возвращен список операций за указанный период." +
+                    "В случае возникновения ошибки при парсинге хотя бы одной из дат, будет возвращен полный список операций.")
     public List<OperationDto> getOperationList(@RequestParam Long customerId,
                                                String startDate,
                                                String endDate) {

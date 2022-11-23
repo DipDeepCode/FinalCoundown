@@ -1,5 +1,6 @@
 package ru.sf.ibapi.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.sf.ibapi.apiresponses.responsebuilder.ApiResponseBuilder;
@@ -28,12 +29,16 @@ public class BalanceController {
     }
 
     @GetMapping("/get")
+    @Operation(summary = "Получение текущего баланса пользователя",
+            description = "Возвращает баланс пользователя по его customerId")
     public BalanceDto getBalance(@RequestParam Long customerId) {
         Balance balance = balanceService.getBalance(customerId);
         return customMapper.map(balance, BalanceDto.class);
     }
 
     @PutMapping("/put")
+    @Operation(summary = "Пополнение баланса пользователя на заданную сумму",
+            description = "Увеличивает значение баланса пользователя по его customerId на заданную сумму amount")
     public ApiResponse putMoney(@RequestParam Long customerId,
                                 @RequestParam Long amount) throws ChangeBalanceException {
         balanceService.putMoney(customerId, amount);
@@ -41,6 +46,8 @@ public class BalanceController {
     }
 
     @PutMapping("/take")
+    @Operation(summary = "Снятие заданной суммы с баланса пользователя",
+            description = "Уменьшает значение баланса пользователя по его customerId на заданную сумму amount")
     public ApiResponse takeMoney(@RequestParam Long customerId,
                                  @RequestParam Long amount) throws ChangeBalanceException {
         balanceService.takeMoney(customerId, amount);
@@ -48,6 +55,8 @@ public class BalanceController {
     }
 
     @PutMapping("/transfer")
+    @Operation(summary = "Перевод заданной суммы от одного пользователя другому",
+            description = "Переводит заданную сумму amount от одного пользователя senderCustomerId другому recipientCustomerId")
     public ApiResponse addTransfer(@RequestParam Long senderCustomerId,
                                    @RequestParam Long recipientCustomerId,
                                    @RequestParam Long amount) throws ChangeBalanceException {

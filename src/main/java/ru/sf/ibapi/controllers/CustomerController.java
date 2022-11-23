@@ -1,5 +1,6 @@
 package ru.sf.ibapi.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.sf.ibapi.custommapper.CustomMapper;
@@ -23,6 +24,9 @@ public class CustomerController { //TODO добавить логгировани
     }
 
     @PostMapping("/add")
+    @Operation(summary = "Добавление пользователя",
+            description = "Добавляет пользователя в БД, закрепляет за ним баланс с нулевым значением " +
+                    "и в случае успеха возвращает dto пользователя в формате json")
     public CustomerDto addCustomer(@Valid @RequestBody CustomerDto customerDto) {
         Customer customer = customMapper.map(customerDto, Customer.class);
         customer = customerService.saveCustomer(customer);
@@ -30,12 +34,17 @@ public class CustomerController { //TODO добавить логгировани
     }
 
     @GetMapping("/find")
+    @Operation(summary = "Поиск пользователя по id",
+            description = "Производит поиск пользователя и в случае успеха возвращает dto пользователя в формате json")
     public CustomerDto findCustomer(@RequestParam Long customerId) {
         Customer customer = customerService.findCustomer(customerId);
         return customMapper.map(customer, CustomerDto.class);
     }
 
     @PutMapping("/updatenames")
+    @Operation(summary = "Изменение имени и фамилии пользователя по id",
+            description = "Производит изменение полей firstname и lastname у пользователя на переданные. Оба значения обязательны." +
+                    "В случае успеха возвращает dto пользователя в формате json")
     public CustomerDto updateCustomerNames(@RequestParam Long customerId,
                                            @RequestParam String firstname,
                                            @RequestParam String lastname) {
@@ -44,6 +53,9 @@ public class CustomerController { //TODO добавить логгировани
     }
 
     @DeleteMapping("delete")
+    @Operation(summary = "Отключение пользователя по id",
+            description = "Не удаляет пользователя из БД. Устанавливает у него в поле disabledTimestamp текущее значение. " +
+                    "Восстановление из этого состояния не предусмотрено")
     public void deleteCustomer(@RequestParam Long customerId) {
         customerService.deleteCustomer(customerId);
     }
